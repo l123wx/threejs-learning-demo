@@ -7,7 +7,6 @@
     import { onMounted } from 'vue'
     import * as THREE from 'three'
 
-    // once everything is loaded, we run our Three.js stuff.
     function init() {
         // create a scene, that will hold all our elements such as objects, cameras and lights.
         var scene = new THREE.Scene()
@@ -47,6 +46,7 @@
         var cubeGeometry = new THREE.BoxGeometry(4, 4, 4)
         var cubeMaterial = new THREE.MeshBasicMaterial({
             color: 0xff0000,
+            // 开启wireframe属性，这样物体就不会被渲染为实体物体
             wireframe: true
         })
         var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
