@@ -1,0 +1,11 @@
+<template>
+    <RouterView />
+</template>
+
+<style>
+    body {
+        /* set margin to 0 and overflow to hidden, to go fullscreen */
+        margin: 0;
+        overflow: hidden;
+    }
+</style>
