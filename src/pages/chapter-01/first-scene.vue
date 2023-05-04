@@ -9,16 +9,20 @@
     import Stats from 'three/examples/jsm/libs/stats.module.js'
     import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 
-    const stats = new Stats()
-    stats.showPanel(0)
-    document.body.appendChild(stats.dom)
+    let camera: THREE.PerspectiveCamera,
+        scene: THREE.Scene,
+        renderer: THREE.WebGLRenderer
 
     function init() {
+        const stats = new Stats()
+        stats.showPanel(0)
+        document.body.appendChild(stats.dom)
+
         // create a scene, that will hold all our elements such as objects, cameras and lights.
-        var scene = new THREE.Scene()
+        scene = new THREE.Scene()
 
         // create a camera, which defines where we're looking at.
-        var camera = new THREE.PerspectiveCamera(
+        camera = new THREE.PerspectiveCamera(
             45,
             window.innerWidth / window.innerHeight,
             0.1,
@@ -26,7 +30,7 @@
         )
 
         // create a render and set the size
-        var renderer = new THREE.WebGLRenderer()
+        renderer = new THREE.WebGLRenderer()
         renderer.setClearColor(new THREE.Color(0xeeeeee))
         renderer.setSize(window.innerWidth, window.innerHeight)
         renderer.shadowMap.enabled = true
@@ -133,6 +137,15 @@
             renderer.render(scene, camera)
         }
     }
+
+    function onResize() {
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+
+    // listen to the resize events
+    window.addEventListener('resize', onResize, false)
 
     onMounted(init)
 </script>
