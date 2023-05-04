@@ -6,6 +6,11 @@
 <script setup lang="ts">
     import { onMounted } from 'vue'
     import * as THREE from 'three'
+    import Stats from 'three/examples/jsm/libs/stats.module.js'
+
+    const stats = new Stats()
+    stats.showPanel(0)
+    document.body.appendChild(stats.dom)
 
     function init() {
         // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -100,6 +105,8 @@
         renderScene()
 
         function renderScene() {
+            stats.update()
+
             // rotate the cube around its axes
             cube.rotation.x += 0.02
             cube.rotation.y += 0.02
