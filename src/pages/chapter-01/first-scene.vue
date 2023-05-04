@@ -8,10 +8,12 @@
     import * as THREE from 'three'
     import Stats from 'three/examples/jsm/libs/stats.module.js'
     import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
+    import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 
     let camera: THREE.PerspectiveCamera,
         scene: THREE.Scene,
-        renderer: THREE.WebGLRenderer
+        renderer: THREE.WebGLRenderer,
+        controller: TrackballControls
 
     function init() {
         const stats = new Stats()
@@ -117,10 +119,15 @@
         gui.add(controls, 'rotationSpeed', 0, 0.5)
         gui.add(controls, 'bouncingSpeed', 0, 0.5)
 
+        controller = new TrackballControls(camera, renderer.domElement)
+        controller.staticMoving = true
+        controller.rotateSpeed = 10
+
         renderScene()
 
         function renderScene() {
             stats.update()
+            controller.update()
 
             // rotate the cube around its axes
             cube.rotation.x += controls.rotationSpeed
@@ -141,11 +148,12 @@
     function onResize() {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
+        controller.handleResize()
         renderer.setSize(window.innerWidth, window.innerHeight)
     }
 
+    onMounted(init)
+
     // listen to the resize events
     window.addEventListener('resize', onResize, false)
-
-    onMounted(init)
 </script>
