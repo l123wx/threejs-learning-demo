@@ -23,6 +23,7 @@
         var renderer = new THREE.WebGLRenderer()
         renderer.setClearColor(new THREE.Color(0xeeeeee))
         renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.shadowMap.enabled = true
 
         // show axes in the screen
         var axes = new THREE.AxesHelper(20)
@@ -30,8 +31,10 @@
 
         // create the ground plane
         var planeGeometry = new THREE.PlaneGeometry(60, 20)
-        var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc })
+        // 因为基本材质（MeshBasicMaterial）不会对光源有反应，所以需要更换材质
+        var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc })
         var plane = new THREE.Mesh(planeGeometry, planeMaterial)
+        plane.receiveShadow = true
 
         // rotate and position the plane
         plane.rotation.x = -0.5 * Math.PI
@@ -44,12 +47,13 @@
 
         // create a cube
         var cubeGeometry = new THREE.BoxGeometry(4, 4, 4)
-        var cubeMaterial = new THREE.MeshBasicMaterial({
-            color: 0xff0000,
+        var cubeMaterial = new THREE.MeshLambertMaterial({
+            color: 0xff0000
             // 开启wireframe属性，这样物体就不会被渲染为实体物体
-            wireframe: true
+            // wireframe: true
         })
         var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+        cube.castShadow = true
 
         // position the cube
         cube.position.x = -4
@@ -61,11 +65,11 @@
 
         // create a sphere
         var sphereGeometry = new THREE.SphereGeometry(4, 20, 20)
-        var sphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x7777ff,
-            wireframe: true
+        var sphereMaterial = new THREE.MeshLambertMaterial({
+            color: 0x7777ff
         })
         var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+        sphere.castShadow = true
 
         // position the sphere
         sphere.position.x = 20
@@ -80,6 +84,12 @@
         camera.position.y = 40
         camera.position.z = 30
         camera.lookAt(scene.position)
+
+        // add spotlight for the shadows
+        var spotLight = new THREE.SpotLight(0xffffff)
+        spotLight.position.set(-40, 60, -10)
+        spotLight.castShadow = true
+        scene.add(spotLight)
 
         // add the output of the renderer to the html element
         document
