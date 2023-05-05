@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-    import { onMounted } from 'vue'
+    import { onBeforeUnmount, onMounted } from 'vue'
     import * as THREE from 'three'
     import Stats from 'three/examples/jsm/libs/stats.module.js'
     import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
@@ -13,10 +13,13 @@
     let camera: THREE.PerspectiveCamera,
         scene: THREE.Scene,
         renderer: THREE.WebGLRenderer,
-        controller: TrackballControls
+        controller: TrackballControls,
+        stats: Stats,
+        gui: GUI,
+        renderScene: () => void
 
     function init() {
-        const stats = new Stats()
+        stats = new Stats()
         stats.showPanel(0)
         document.body.appendChild(stats.dom)
 
@@ -115,7 +118,7 @@
             bouncingSpeed: 0.03
         }
 
-        const gui = new GUI()
+        gui = new GUI()
         gui.add(controls, 'rotationSpeed', 0, 0.5)
         gui.add(controls, 'bouncingSpeed', 0, 0.5)
 
@@ -123,9 +126,7 @@
         controller.staticMoving = true
         controller.rotateSpeed = 10
 
-        renderScene()
-
-        function renderScene() {
+        renderScene = () => {
             stats.update()
             controller.update()
 
@@ -143,6 +144,8 @@
             requestAnimationFrame(renderScene)
             renderer.render(scene, camera)
         }
+
+        renderScene()
     }
 
     function onResize() {
@@ -152,8 +155,17 @@
         renderer.setSize(window.innerWidth, window.innerHeight)
     }
 
-    onMounted(init)
+    onMounted(() => {
+        init()
 
-    // listen to the resize events
-    window.addEventListener('resize', onResize, false)
+        // listen to the resize events
+        window.addEventListener('resize', onResize, false)
+    })
+
+    onBeforeUnmount(() => {
+        stats.dom.remove()
+        gui.destroy()
+        renderScene = () => void 0
+        window.removeEventListener('resize', onResize, false)
+    })
 </script>
