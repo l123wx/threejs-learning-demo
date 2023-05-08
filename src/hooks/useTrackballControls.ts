@@ -1,4 +1,4 @@
-import { onBeforeUnmount, onMounted } from 'vue'
+import { onBeforeUnmount } from 'vue'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 
 const useTrackballControls = (...args: ConstructorParameters<typeof TrackballControls>) => {
@@ -10,10 +10,8 @@ const useTrackballControls = (...args: ConstructorParameters<typeof TrackballCon
         controller.handleResize()
     }
 
-    onMounted(() => {
-        // listen to the resize events
-        window.addEventListener('resize', onResize, false)
-    })
+    // listen to the resize events
+    window.addEventListener('resize', onResize, false)
 
     onBeforeUnmount(() => {
         window.removeEventListener('resize', onResize, false)

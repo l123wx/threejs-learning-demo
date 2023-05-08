@@ -4,6 +4,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import useGui from '/@/hooks/useGui'
 import useStats from '/@/hooks/useStats'
 import useTrackballControls from './useTrackballControls'
+import usePerspectiveCamera from './usePerspectiveCamera'
 
 /**
  * 创建一个基本的场景
@@ -14,11 +15,12 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
         controller: TrackballControls,
         renderScene: FrameRequestCallback
 
+    let camera: THREE.Camera = usePerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000)
+
     const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000)
     const gui = useGui()
 
-    function init() {
+    const init = () => {
         const stats = useStats(0)
         document.body.appendChild(stats.dom)
 
@@ -65,7 +67,7 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
             .getElementById('WebGL-output')
             ?.appendChild(renderer.domElement)
 
-        const controller = useTrackballControls(camera, renderer.domElement)
+        controller = useTrackballControls(camera, renderer.domElement)
 
         renderScene = (...args) => {
             stats.update()
@@ -81,10 +83,13 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
         requestAnimationFrame(renderScene)
     }
 
-    function onResize() {
-        camera.aspect = window.innerWidth / window.innerHeight
-        camera.updateProjectionMatrix()
+    const onResize = () => {
         renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+
+    const setCamera = (newCamera: THREE.Camera) => {
+        camera = newCamera
+        controller.object = camera
     }
 
     onMounted(() => {
@@ -101,7 +106,8 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
     return {
         scene,
         gui,
-        camera
+        camera,
+        setCamera
     }
 }
 
