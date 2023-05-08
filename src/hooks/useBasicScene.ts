@@ -3,27 +3,24 @@ import * as THREE from 'three'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 import useGui from '/@/hooks/useGui'
 import useStats from '/@/hooks/useStats'
+import useTrackballControls from './useTrackballControls'
 
+/**
+ * 创建一个基本的场景
+ * @param frameRequestCallback requestAnimationFrame的回调函数
+ */
 const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
-    let camera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer,
+    let renderer: THREE.WebGLRenderer,
         controller: TrackballControls,
         renderScene: FrameRequestCallback
 
     const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000)
     const gui = useGui()
 
     function init() {
         const stats = useStats(0)
         document.body.appendChild(stats.dom)
-
-        // create a camera, which defines where we're looking at.
-        camera = new THREE.PerspectiveCamera(
-            45,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        )
 
         // create a render and set the size
         renderer = new THREE.WebGLRenderer()
@@ -36,18 +33,14 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
         scene.add(axes)
 
         // position and point the camera to the center of the scene
-        camera.position.x = -30
-        camera.position.y = 40
-        camera.position.z = 30
+        camera.position.x = -20
+        camera.position.y = 25
+        camera.position.z = 20
         camera.lookAt(scene.position)
-
-        // add subtle ambient lighting
-        var ambientLight = new THREE.AmbientLight(0x090909);
-        scene.add(ambientLight);
 
         // add spotlight for the shadows
         var spotLight = new THREE.SpotLight(0xffffff);
-        spotLight.position.set(-40, 40, 50);
+        spotLight.position.set(-40, 60, 23);
         spotLight.castShadow = true;
         scene.add(spotLight);
 
@@ -72,9 +65,7 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
             .getElementById('WebGL-output')
             ?.appendChild(renderer.domElement)
 
-        controller = new TrackballControls(camera, renderer.domElement)
-        controller.staticMoving = true
-        controller.rotateSpeed = 10
+        const controller = useTrackballControls(camera, renderer.domElement)
 
         renderScene = (...args) => {
             stats.update()
@@ -93,13 +84,11 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
     function onResize() {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
-        controller.handleResize()
         renderer.setSize(window.innerWidth, window.innerHeight)
     }
 
     onMounted(() => {
         init()
-
         // listen to the resize events
         window.addEventListener('resize', onResize, false)
     })
@@ -111,7 +100,8 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
 
     return {
         scene,
-        gui
+        gui,
+        camera
     }
 }
 
