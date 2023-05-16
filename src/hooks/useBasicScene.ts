@@ -11,12 +11,16 @@ import usePerspectiveCamera from './usePerspectiveCamera'
  * @param frameRequestCallback requestAnimationFrame的回调函数
  */
 const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
-    let renderer: THREE.WebGLRenderer,
-        controller: TrackballControls,
-        renderScene: FrameRequestCallback
+    let controller: TrackballControls, renderScene: FrameRequestCallback
 
-    let camera: THREE.Camera = usePerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000)
+    let camera: THREE.Camera = usePerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    )
 
+    const renderer = new THREE.WebGLRenderer()
     const scene = new THREE.Scene()
     const gui = useGui()
 
@@ -25,7 +29,6 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
         document.body.appendChild(stats.dom)
 
         // create a render and set the size
-        renderer = new THREE.WebGLRenderer()
         renderer.setClearColor(new THREE.Color(0xcccccc))
         renderer.setSize(window.innerWidth, window.innerHeight)
         renderer.shadowMap.enabled = true
@@ -41,10 +44,11 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
         camera.lookAt(scene.position)
 
         // add spotlight for the shadows
-        var spotLight = new THREE.SpotLight(0xffffff);
-        spotLight.position.set(-40, 60, 23);
-        spotLight.castShadow = true;
-        scene.add(spotLight);
+        var spotLight = new THREE.SpotLight(0xffffff)
+        spotLight.position.set(-40, 60, 23)
+        spotLight.castShadow = true
+        spotLight.name = 'defaultSpotLight'
+        scene.add(spotLight)
 
         // create the ground plane
         var planeGeometry = new THREE.PlaneGeometry(60, 40)
@@ -52,6 +56,7 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
         var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff })
         var plane = new THREE.Mesh(planeGeometry, planeMaterial)
         plane.receiveShadow = true
+        plane.name = 'ground plane'
 
         // rotate and position the plane
         plane.rotation.x = -0.5 * Math.PI
@@ -104,6 +109,7 @@ const useBasicScene = (frameRequestCallback?: FrameRequestCallback) => {
     })
 
     return {
+        renderer,
         scene,
         gui,
         camera,
