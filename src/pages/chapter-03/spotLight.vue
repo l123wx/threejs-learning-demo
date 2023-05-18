@@ -140,6 +140,9 @@
             spotLight.decay = newValue
         })
         gui.add(controls, 'isLightMoving')
+        gui.add(controls, 'distance', 0, 100).onChange((newValue: number) => {
+            spotLight.distance = newValue
+        })
         gui.add(controls, 'penumbra', 0, 1).onChange((newValue: number) => {
             spotLight.penumbra = newValue
         })
