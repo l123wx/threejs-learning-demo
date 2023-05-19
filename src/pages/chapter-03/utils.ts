@@ -29,7 +29,20 @@ export const createCubeAndSphere = () => {
     sphere.position.y = 0
     sphere.position.z = 2
 
-    return { cube, sphere }
+    let step = 0
+    const animate = () => {
+        // rotate the cube around its axes
+        cube.rotation.x += 0.02
+        cube.rotation.y += 0.02
+        cube.rotation.z += 0.02
+
+        // bounce the sphere up and down
+        step += 0.03
+        sphere.position.x = 20 + 10 * Math.cos(step)
+        sphere.position.y = 2 + 10 * Math.abs(Math.sin(step))
+    }
+
+    return { cube, sphere, animate }
 }
 
 export const createSpotLight = () => {
@@ -59,10 +72,86 @@ export const createSpotLight = () => {
 
     setPosition(3, 20, 3)
 
+    // used to determine the switch point for the light animation
+    let invert = 1
+    let phase = 0
+    const move = () => {
+        if (phase > 2 * Math.PI) {
+            invert = invert * -1
+            phase -= 2 * Math.PI
+        } else {
+            phase += 0.03
+        }
+
+        const x =
+                invert < 0
+                    ? invert * (14 * Math.cos(phase) - 14) + 14
+                    : 14 * Math.cos(phase),
+            y = 20,
+            z = 7 * Math.sin(phase)
+
+        setPosition(x, y, z)
+    }
+
     return {
         spotLight,
         spotLightHelper,
         spotLightGroup: group,
-        setPosition
+        move
+    }
+}
+
+export const createPointLight = () => {
+    var pointLight = new THREE.PointLight()
+    pointLight.position.set(0, 0, 0)
+    pointLight.castShadow = true
+
+    const pointLightHelper = new THREE.PointLightHelper(pointLight)
+
+    // add a small sphere simulating the pointlight
+    var sphereLight = new THREE.SphereGeometry(0.2)
+    var sphereLightMaterial = new THREE.MeshBasicMaterial({
+        color: 0xac6c25
+    })
+    var sphereLightMesh = new THREE.Mesh(sphereLight, sphereLightMaterial)
+    sphereLightMesh.position.set(0, 0, 0)
+
+    const group = new THREE.Group()
+    group.add(pointLight, sphereLightMesh)
+
+    const setPosition = (
+        ...args: Parameters<THREE.Mesh['position']['set']>
+    ) => {
+        group.position.set(...args)
+        pointLightHelper.update()
+    }
+
+    setPosition(3, 5, 3)
+
+    // used to determine the switch point for the light animation
+    let invert = 1
+    let phase = 0
+    const move = () => {
+        if (phase > 2 * Math.PI) {
+            invert = invert * -1
+            phase -= 2 * Math.PI
+        } else {
+            phase += 0.03
+        }
+
+        const x =
+                invert < 0
+                    ? invert * (14 * Math.cos(phase) - 14) + 14
+                    : 14 * Math.cos(phase),
+            z = 7 * Math.sin(phase)
+
+        setPosition(x, group.position.y, z)
+    }
+
+    return {
+        pointLight,
+        pointLightHelper,
+        pointLightGroup: group,
+        move
     }
 }
