@@ -9,12 +9,14 @@ const router = createRouter({
             path: '/',
             component: () => import('../pages/index.vue')
         },
-        ...Object.keys(pages).map(path => {
-            return {
-                path: path.match(/(?<=\.\/pages).+(?=\.vue)/g)?.[0] || '',
-                component: pages[path]
-            }
-        })
+        ...Object.keys(pages)
+            .map(path => {
+                return {
+                    path: path.match(/(?<=\.\/pages).+(?=\.vue)/g)?.[0] || '',
+                    component: pages[path]
+                }
+            })
+            .filter(route => route.path)
     ]
 })
 
